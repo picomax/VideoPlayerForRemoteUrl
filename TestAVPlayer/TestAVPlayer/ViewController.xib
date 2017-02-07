@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ViewController">
+            <connections>
+                <outlet property="degreeTextField" destination="gh4-Rb-MP7" id="ZrW-Ed-Hoq"/>
+                <outlet property="urlTextField" destination="7QZ-QY-Ku1" id="3Ez-1c-MDX"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="AVPlayer for Test" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zgv-in-fcF">
+                    <rect key="frame" x="20" y="30" width="560" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="vk6-nk-RJN"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="재생할 URL을 입력하세요." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FQq-Fd-812">
+                    <rect key="frame" x="20" y="100" width="560" height="15"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="http://farm32.ids.skplanet.com:8012/hub/candy/media/1001000/1001000012/1001000012.mp4" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="7QZ-QY-Ku1">
+                    <rect key="frame" x="20" y="115" width="560" height="36"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="36" id="4v3-b4-WU0"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits"/>
+                </textField>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZmQ-Fn-gap">
+                    <rect key="frame" x="20" y="151" width="560" height="1"/>
+                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="XiK-Ta-cgB"/>
+                    </constraints>
+                </view>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0.0" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gh4-Rb-MP7">
+                    <rect key="frame" x="20" y="197" width="50" height="36"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="50" id="5gh-YH-iCX"/>
+                        <constraint firstAttribute="height" constant="36" id="u2d-6v-hkH"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                </textField>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TF6-sp-oVJ">
+                    <rect key="frame" x="20" y="233" width="50" height="1"/>
+                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="vXn-MJ-cHg"/>
+                    </constraints>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SHi-I8-7Z3">
+                    <rect key="frame" x="200" y="274" width="200" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="1IT-I0-qNp"/>
+                        <constraint firstAttribute="width" constant="200" id="wg3-NB-ubV"/>
+                    </constraints>
+                    <state key="normal" title="다 됐으면 이 버튼을 누르세요!"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="3"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
+                            <integer key="value" value="1"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="submitButtonTapped:" destination="-1" eventType="touchUpInside" id="2Am-Dl-Pzg"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="회전할 각도를 입력하세요." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8hG-k7-GpG">
+                    <rect key="frame" x="20" y="182" width="560" height="15"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <gestureRecognizers/>
+            <constraints>
+                <constraint firstItem="7QZ-QY-Ku1" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="20" id="4wL-9C-Am0"/>
+                <constraint firstItem="FQq-Fd-812" firstAttribute="top" secondItem="zgv-in-fcF" secondAttribute="bottom" constant="30" id="7fG-am-dj0"/>
+                <constraint firstItem="zgv-in-fcF" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="20" id="B7o-HO-PQW"/>
+                <constraint firstItem="7QZ-QY-Ku1" firstAttribute="top" secondItem="FQq-Fd-812" secondAttribute="bottom" id="CNs-rO-hml"/>
+                <constraint firstItem="gh4-Rb-MP7" firstAttribute="top" secondItem="8hG-k7-GpG" secondAttribute="bottom" id="DeL-n0-Nni"/>
+                <constraint firstItem="ZmQ-Fn-gap" firstAttribute="top" secondItem="7QZ-QY-Ku1" secondAttribute="bottom" id="Hhx-Av-YSX"/>
+                <constraint firstItem="TF6-sp-oVJ" firstAttribute="leading" secondItem="gh4-Rb-MP7" secondAttribute="leading" id="IIT-iN-Mxm"/>
+                <constraint firstItem="TF6-sp-oVJ" firstAttribute="top" secondItem="gh4-Rb-MP7" secondAttribute="bottom" id="Pou-IF-R3p"/>
+                <constraint firstItem="8hG-k7-GpG" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="20" id="Uw5-qm-Z9J"/>
+                <constraint firstItem="zgv-in-fcF" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="30" id="VqE-nD-LM4"/>
+                <constraint firstAttribute="trailing" secondItem="FQq-Fd-812" secondAttribute="trailing" constant="20" id="W2d-ll-o1H"/>
+                <constraint firstItem="FQq-Fd-812" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="20" id="ZTJ-Ja-3Vu"/>
+                <constraint firstItem="ZmQ-Fn-gap" firstAttribute="leading" secondItem="7QZ-QY-Ku1" secondAttribute="leading" id="b79-MN-YhW"/>
+                <constraint firstAttribute="trailing" secondItem="7QZ-QY-Ku1" secondAttribute="trailing" constant="20" id="cVQ-Ep-V5O"/>
+                <constraint firstItem="SHi-I8-7Z3" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="irX-2s-3DN"/>
+                <constraint firstItem="gh4-Rb-MP7" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="20" id="iuf-zb-ogO"/>
+                <constraint firstAttribute="trailing" secondItem="8hG-k7-GpG" secondAttribute="trailing" constant="20" id="nWg-Dr-KcV"/>
+                <constraint firstAttribute="trailing" secondItem="zgv-in-fcF" secondAttribute="trailing" constant="20" id="oy8-gn-uYE"/>
+                <constraint firstItem="TF6-sp-oVJ" firstAttribute="width" secondItem="gh4-Rb-MP7" secondAttribute="width" id="sGQ-ew-OE7"/>
+                <constraint firstItem="ZmQ-Fn-gap" firstAttribute="width" secondItem="7QZ-QY-Ku1" secondAttribute="width" id="tKl-44-T6b"/>
+                <constraint firstItem="SHi-I8-7Z3" firstAttribute="top" secondItem="TF6-sp-oVJ" secondAttribute="bottom" constant="40" id="vKG-UR-aDz"/>
+                <constraint firstItem="8hG-k7-GpG" firstAttribute="top" secondItem="ZmQ-Fn-gap" secondAttribute="bottom" constant="30" id="wSp-tV-ZMR"/>
+            </constraints>
+            <connections>
+                <outletCollection property="gestureRecognizers" destination="BWf-vh-5a8" appends="YES" id="tO0-Uf-hKN"/>
+            </connections>
+        </view>
+        <tapGestureRecognizer id="BWf-vh-5a8">
+            <connections>
+                <action selector="dismissKeyboard:" destination="-1" id="OmZ-ON-5gx"/>
+            </connections>
+        </tapGestureRecognizer>
+    </objects>
+</document>

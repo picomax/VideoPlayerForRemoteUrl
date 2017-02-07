@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MPMPlayerViewController">
+            <connections>
+                <outlet property="sizeLabel" destination="8mK-hr-C4r" id="eza-bK-nef"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vaM-Lo-U2K">
+                    <rect key="frame" x="545" y="30" width="35" height="35"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="35" id="Ubp-cV-nhP"/>
+                        <constraint firstAttribute="width" constant="35" id="hVU-V6-Gzi"/>
+                    </constraints>
+                    <state key="normal" image="close_button"/>
+                    <connections>
+                        <action selector="closeButtonTapped:" destination="-1" eventType="touchUpInside" id="3l4-kc-65k"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="동영상 실제 크기는" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8mK-hr-C4r">
+                    <rect key="frame" x="20" y="30" width="505" height="35"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="35" id="cnX-uy-zrd"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="vaM-Lo-U2K" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="30" id="2xb-gm-cls"/>
+                <constraint firstItem="8mK-hr-C4r" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="30" id="NQN-9U-aJ6"/>
+                <constraint firstItem="8mK-hr-C4r" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="20" id="U8h-2O-dKo"/>
+                <constraint firstAttribute="trailing" secondItem="vaM-Lo-U2K" secondAttribute="trailing" constant="20" id="kJj-hn-4GD"/>
+                <constraint firstItem="vaM-Lo-U2K" firstAttribute="leading" secondItem="8mK-hr-C4r" secondAttribute="trailing" constant="20" id="qTW-v1-0vt"/>
+            </constraints>
+            <point key="canvasLocation" x="344" y="341"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="close_button" width="35" height="35"/>
+    </resources>
+</document>
