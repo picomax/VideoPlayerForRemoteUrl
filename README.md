@@ -17,8 +17,8 @@ There are 4 Xcode projects in total as described below.
   * TestMPMPlayer
 
 ## Screenshot
-![](https://raw.githubusercontent.com/picomax/FlickrFeed/master/ScreenShot_01.jpg)
-![](https://raw.githubusercontent.com/picomax/FlickrFeed/master/ScreenShot_02.jpg)
+![](https://github.com/picomax/VideoPlayerForRemoteUrl/blob/master/ScreenShot_01.jpg)
+![](https://github.com/picomax/VideoPlayerForRemoteUrl/blob/master/ScreenShot_02.jpg)
 
 ## Current Status
 
@@ -28,5 +28,3 @@ This is sample version for study, will be updated later.
 
 Copyright (c) 2016, [Jeong-Hoon Mo](https://github.com/picomax).
 All rights reserved.
-
-[https://www.nzeen.com] (https://nzeen.com/77302)
