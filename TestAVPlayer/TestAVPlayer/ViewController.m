@@ -9,7 +9,8 @@
 #import "AVPlayerViewController.h"
 #import "ViewController.h"
 
-NSString *const DefaultVideoUrl = @"http://farm32.ids.skplanet.com:8012/hub/candy/media/1001000/1001000012/1001000012.mp4";
+//NSString *const DefaultVideoUrl = @"http://farm32.ids.skplanet.com:8012/hub/candy/media/1001000/1001000012/1001000012.mp4";
+NSString *const DefaultVideoUrl = @"http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8";
 
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UITextField *urlTextField;
@@ -51,9 +52,9 @@ NSString *const DefaultVideoUrl = @"http://farm32.ids.skplanet.com:8012/hub/cand
     CGFloat degree = [degreeString floatValue];
     
     if(url == nil || [url.absoluteString isEqualToString:@"http://"] == YES){
-        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"URL 오류"
-                                                       message:@"URL을 확인하세요." delegate:self
-                                             cancelButtonTitle:@"확인"
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"URL Error!"
+                                                       message:@"Please check the URL you entered." delegate:self
+                                             cancelButtonTitle:@"Confirm"
                                              otherButtonTitles:nil, nil];
         [alert show];
         return;

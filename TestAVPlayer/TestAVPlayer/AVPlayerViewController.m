@@ -9,7 +9,10 @@
 #import <AVFoundation/AVFoundation.h>
 #import "AVPlayerViewController.h"
 
-NSString *const AVPlayerStartMediaNotificationKey = @"AVPlayerStartMediaNotificationKey";
+#define contains(str1, str2) ([str1 rangeOfString: str2 ].location != NSNotFound)
+
+
+//NSString *const AVPlayerStartMediaNotificationKey = @"AVPlayerStartMediaNotificationKey";
 
 #define degreeToRadian(x) (M_PI * x / 180.0)
 #define radianToDegree(x) (180.0 * x / M_PI)
@@ -17,14 +20,42 @@ NSString *const AVPlayerStartMediaNotificationKey = @"AVPlayerStartMediaNotifica
 @interface AVPlayerViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *sizeLabel;
 @property (nonatomic, strong) UIView * videoView;
+@property (nonatomic, strong) AVPlayerLayer* playerLayer;
 @property (strong, nonatomic) AVPlayer *player;
+@property (strong, nonatomic) AVPlayerItem *playerItem;
 @property (assign, nonatomic) CGFloat degree;
+@property (strong, nonatomic) AVPlayerItemVideoOutput *videoOutput;
+@property (assign, nonatomic) NSInteger videoWidth;
+@property (assign, nonatomic) NSInteger videoHeight;
+//@property (strong, nonatomic) AVAssetImageGenerator *imageGenerator;
 @end
 
 @implementation AVPlayerViewController
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    @try {
+        [_player removeObserver:self forKeyPath:@"status"];
+    } @catch (NSException *exception) {
+        //<#Handle an exception thrown in the @try block#>
+    } @finally {
+        //<#Code that gets executed whether or not an exception is thrown#>
+    }
+    
+    @try {
+        [_player removeObserver:self forKeyPath:@"rate"];
+    } @catch (NSException *exception) {
+        //<#Handle an exception thrown in the @try block#>
+    } @finally {
+        //<#Code that gets executed whether or not an exception is thrown#>
+    }
+    
+    @try {
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+    } @catch (NSException *exception) {
+        //<#Handle an exception thrown in the @try block#>
+    } @finally {
+        //<#Code that gets executed whether or not an exception is thrown#>
+    }
 }
 
 - (void)viewDidLoad {
@@ -34,221 +65,142 @@ NSString *const AVPlayerStartMediaNotificationKey = @"AVPlayerStartMediaNotifica
 - (void)setVideoWithFrame:(CGRect)frame videoUrl:(NSURL*)url degree:(CGFloat)degree {
     self.degree = degree;
     
-    _videoView = [[UIView alloc] initWithFrame:frame];
-    _player = [AVPlayer playerWithURL:url];
+    self.videoView = [[UIView alloc] initWithFrame:frame];
+    //_player = [AVPlayer playerWithURL:url];
     _player.volume = 0.0f;
     
-    AVPlayerLayer* playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
-    playerLayer.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
+    //if( contains(url.absoluteString, @".m3u") == YES )
+    //{
+        AVURLAsset *asset = [AVURLAsset URLAssetWithURL:url options:nil];
+        self.playerItem = [AVPlayerItem playerItemWithAsset:asset];
+        self.player = [AVPlayer playerWithPlayerItem:_playerItem];
+    //}
+    //else
+    //{
+    //    _player = [AVPlayer playerWithURL:url];
+    //}
     
-    playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-    playerLayer.needsDisplayOnBoundsChange = YES;
+    self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
+    _playerLayer.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
+    //playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+    _playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;
+    _playerLayer.needsDisplayOnBoundsChange = YES;
     
-    [_videoView.layer addSublayer:playerLayer];
+    [_player addObserver:self forKeyPath:@"rate" options:NSKeyValueObservingOptionNew context:nil];
+    [_player addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
+    
+    NSString* const key = (NSString*)kCVPixelBufferPixelFormatTypeKey;
+    NSNumber* const value = [NSNumber numberWithUnsignedInt:kCVPixelFormatType_32BGRA];
+    NSDictionary* const settings = @{ key : value };
+    self.videoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:settings];
+    [_player.currentItem addOutput:_videoOutput];
+    
+    [_videoView.layer addSublayer:_playerLayer];
     _videoView.layer.needsDisplayOnBoundsChange = YES;
     
-    /*
-    //how to know real size of video.
-    AVAssetTrack *track = [_player.currentItem.asset tracksWithMediaType:AVMediaTypeVideo][0];
-    CGSize theNaturalSize = [track naturalSize];
-    theNaturalSize = CGSizeApplyAffineTransform(theNaturalSize, track.preferredTransform);
-    theNaturalSize.width = fabs(theNaturalSize.width);
-    theNaturalSize.height = fabs(theNaturalSize.height);
-    NSLog(@"hahahahahah : %f, %f", theNaturalSize.width, theNaturalSize.height);
-    _sizeLabel.text = [NSString stringWithFormat:@"동영상 실제 크기는 %.1f x %.1f", theNaturalSize.width, theNaturalSize.height];
-    //how to know real size of video.
-    
-    self.player = [self rotateVideoPlayer:_player withDegree:_degree];
-    */
-    //[_player play];
-    
     [self.view addSubview:_videoView];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieLoadStateDidChange:) name:AVPlayerStartMediaNotificationKey object:_player];
 }
 
 - (void)playVideo {
     [_player play];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:AVPlayerStartMediaNotificationKey object:_player];
 }
 
--(void)movieLoadStateDidChange:(NSNotification*)notification {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerStartMediaNotificationKey object:_player];
+- (void)stopVideo {
+    [_player seekToTime:CMTimeMake(0, 1)];
+    [_player pause];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    __weak __typeof__(self) weakSelf = self;
     
-    //how to know real size of video.
-    AVAssetTrack *track = [_player.currentItem.asset tracksWithMediaType:AVMediaTypeVideo][0];
-    CGSize theNaturalSize = [track naturalSize];
-    theNaturalSize = CGSizeApplyAffineTransform(theNaturalSize, track.preferredTransform);
-    theNaturalSize.width = fabs(theNaturalSize.width);
-    theNaturalSize.height = fabs(theNaturalSize.height);
-    NSLog(@"hahahahahah : %f, %f", theNaturalSize.width, theNaturalSize.height);
-    _sizeLabel.text = [NSString stringWithFormat:@"동영상 실제 크기는 %.1f x %.1f", theNaturalSize.width, theNaturalSize.height];
-    //how to know real size of video.
+    //To print out if it is 'rate' or 'status' that has changed:
+    NSLog(@"Changed: %@", keyPath);
     
-    self.player = [self rotateVideoPlayer:_player withDegree:_degree];
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       if ([keyPath isEqualToString:@"rate"]) //If rate has changed:
+                       {
+                           if ([weakSelf.player rate] != 0) //If it started playing
+                           {
+                               // This NSLog is supposed to print out the duration of the video.
+                               NSLog(@"Total time: %f", CMTimeGetSeconds([[weakSelf.player currentItem] duration]));
+                               
+                               [weakSelf rotateVideoPlayer];
+                               
+                               //[weakSelf updateResolutionWithDelay:0.5];
+                               [weakSelf updateResolution];
+                           }
+                       }
+                       else if ([keyPath isEqualToString:@"status"]) // If the status changed
+                       {
+                           if(weakSelf.player.status == AVPlayerStatusReadyToPlay) //If "ReadyToPlay"
+                           {
+                               NSLog(@"ReadyToPlay");
+                               [weakSelf.player play]; //Start the video
+                           }
+                       }
+                   });
+}
+
+- (void)updateResolutionWithDelay:(CGFloat)delay {
+    __weak __typeof__(self) weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delay * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        if ((weakSelf.player.rate != 0) && (weakSelf.player.error == nil))
+        {
+            [weakSelf updateResolution];
+        }
+    });
+}
+
+- (void)updateResolution {
+    /*
+    //for Local Asset^^
+    AVAsset *asset = _player.currentItem.asset;
+    AVAssetImageGenerator *imageGenerator = [[AVAssetImageGenerator alloc]initWithAsset:asset];
+    CGImageRef imageRef = [imageGenerator copyCGImageAtTime:_player.currentItem.currentTime actualTime:nil error:nil];
+    UIImage *image = [UIImage imageWithCGImage:imageRef];
+    NSLog(@"Size : %f, %f", image.size.width, image.size.height);
+    // CGImageRef won't be released by ARC
+    CGImageRelease(imageRef);
+    */
+    
+    // player is playing
+    if ((_player.rate != 0) && (_player.error == nil))
+    {
+        AVAssetTrack *track = [[_player.currentItem.asset tracksWithMediaType:AVMediaTypeVideo] firstObject];
+        if (track != nil)
+        {
+            CGSize naturalSize = [track naturalSize];
+            naturalSize = CGSizeApplyAffineTransform(naturalSize, track.preferredTransform);
+            _videoWidth = (NSInteger) naturalSize.width;
+            _videoHeight = (NSInteger) naturalSize.height;
+        }
+        else
+        {
+            CMTime currentTime = _player.currentItem.currentTime;
+            CVPixelBufferRef buffer = [_videoOutput copyPixelBufferForItemTime:currentTime itemTimeForDisplay:nil];
+            //CIImage *ciImage = [CIImage imageWithCVPixelBuffer:buffer];
+            //UIImage *image = [UIImage imageWithCIImage:ciImage];
+            //You can use the image^^;
+            _videoWidth = CVPixelBufferGetWidth(buffer);
+            _videoHeight = CVPixelBufferGetHeight(buffer);
+        }
+    }
+    _sizeLabel.text = [NSString stringWithFormat:@"Resolution : %ld x %ld", _videoWidth, _videoHeight];
+    
+    if(_videoWidth <= 0 && _videoHeight <= 0){
+        [self updateResolutionWithDelay:0.5];
+    }
+    //[self rotateVideoPlayer];
 }
 
 - (IBAction)closeButtonTapped:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
--(AVPlayer*)rotateVideoPlayer:(AVPlayer*)player withDegree:(float)degree {
-    NSURL* url = [(AVURLAsset *)player.currentItem.asset URL];
-    
-    AVMutableComposition *composition;
-    AVMutableVideoComposition *videoComposition;
-    AVMutableVideoCompositionInstruction * instruction;
-    
-    AVURLAsset* asset = [[AVURLAsset alloc] initWithURL:url options:nil];
-    AVMutableVideoCompositionLayerInstruction *layerInstruction = nil;
-    CGAffineTransform t1;
-    CGAffineTransform t2;
-    AVAssetTrack *assetVideoTrack = nil;
-    AVAssetTrack *assetAudioTrack = nil;
-    // Check if the asset contains video and audio tracks
-    if ([[asset tracksWithMediaType:AVMediaTypeVideo] count] != 0) {
-        assetVideoTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
-    }
-    if ([[asset tracksWithMediaType:AVMediaTypeAudio] count] != 0) {
-        assetAudioTrack = [[asset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0];
-    }
-    CMTime insertionPoint = kCMTimeInvalid;
-    NSError *error = nil;
-    
-    // Step 1
-    // Create a new composition
-    composition = [AVMutableComposition composition];
-    // Insert the video and audio tracks from AVAsset
-    if (assetVideoTrack != nil) {
-        AVMutableCompositionTrack *compositionVideoTrack = [composition addMutableTrackWithMediaType:AVMediaTypeVideo preferredTrackID:kCMPersistentTrackID_Invalid];
-        [compositionVideoTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, [asset duration]) ofTrack:assetVideoTrack atTime:insertionPoint error:&error];
-    }
-    if (assetAudioTrack != nil) {
-        AVMutableCompositionTrack *compositionAudioTrack = [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
-        [compositionAudioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, [asset duration]) ofTrack:assetAudioTrack atTime:insertionPoint error:&error];
-    }
-    
-    
-    // Step 2
-    // Calculate position and size of render video after rotating
-    float width=assetVideoTrack.naturalSize.width;
-    float height=assetVideoTrack.naturalSize.height;
-    float toDiagonal=sqrt(width*width+height*height);
-    float toDiagonalAngle=radianToDegree(acosf(width/toDiagonal));
-    float toDiagonalAngle2=90-radianToDegree(acosf(width/toDiagonal));
-    
-    float toDiagonalAngleComple;
-    float toDiagonalAngleComple2;
-    float finalHeight;
-    float finalWidth;
-    
-    if(degree >= 0 && degree <= 90) {
-        
-        toDiagonalAngleComple=toDiagonalAngle+degree;
-        toDiagonalAngleComple2=toDiagonalAngle2+degree;
-        
-        finalHeight=ABS(toDiagonal*sinf(degreeToRadian(toDiagonalAngleComple)));
-        finalWidth=ABS(toDiagonal*sinf(degreeToRadian(toDiagonalAngleComple2)));
-        
-        t1 = CGAffineTransformMakeTranslation(height*sinf(degreeToRadian(degree)), 0.0);
-    }
-    else if(degree > 90 && degree <= 180) {
-        
-        
-        float degree2 = degree - 90;
-        
-        toDiagonalAngleComple=toDiagonalAngle+degree2;
-        toDiagonalAngleComple2=toDiagonalAngle2+degree2;
-        
-        finalHeight=ABS(toDiagonal*sinf(degreeToRadian(toDiagonalAngleComple2)));
-        finalWidth=ABS(toDiagonal*sinf(degreeToRadian(toDiagonalAngleComple)));
-        
-        t1 = CGAffineTransformMakeTranslation(width*sinf(degreeToRadian(degree2))+height*cosf(degreeToRadian(degree2)), height*sinf(degreeToRadian(degree2)));
-    }
-    else if(degree>=-90&&degree<0){
-        
-        float degree2 = degree-90;
-        float absDegree = ABS(degree);
-        
-        toDiagonalAngleComple=toDiagonalAngle+degree2;
-        toDiagonalAngleComple2=toDiagonalAngle2+degree2;
-        
-        finalHeight=ABS(toDiagonal*sinf(degreeToRadian(toDiagonalAngleComple2)));
-        finalWidth=ABS(toDiagonal*sinf(degreeToRadian(toDiagonalAngleComple)));
-        
-        t1 = CGAffineTransformMakeTranslation(0, width*sinf(degreeToRadian(absDegree)));
-        
-    }
-    else if(degree>=-180&&degree<-90){
-        
-        float absDegree = ABS(degree);
-        float plusDegree = absDegree-90;
-        
-        toDiagonalAngleComple=toDiagonalAngle+degree;
-        toDiagonalAngleComple2=toDiagonalAngle2+degree;
-        
-        finalHeight=ABS(toDiagonal*sinf(degreeToRadian(toDiagonalAngleComple)));
-        finalWidth=ABS(toDiagonal*sinf(degreeToRadian(toDiagonalAngleComple2)));
-        
-        t1 = CGAffineTransformMakeTranslation(width*sinf(degreeToRadian(plusDegree)), height*sinf(degreeToRadian(plusDegree))+width*cosf(degreeToRadian(plusDegree)));
-        
-    }
-    
-    
-    // Rotate transformation
-    t2 = CGAffineTransformRotate(t1, degreeToRadian(degree));
-    
-    
-    // Step 3
-    // Set the appropriate render sizes and rotational transforms
-    
-    
-    // Create a new video composition
-    videoComposition = [AVMutableVideoComposition videoComposition];
-    videoComposition.renderSize = CGSizeMake(finalWidth,finalHeight);
-    videoComposition.frameDuration = CMTimeMake(1, 30);
-    
-    // The rotate transform is set on a layer instruction
-    instruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
-    
-    instruction.timeRange = CMTimeRangeMake(kCMTimeZero, [composition duration]);
-    
-    layerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:[composition.tracks objectAtIndex:0]];
-    [layerInstruction setTransform:t2 atTime:kCMTimeZero];
-    
-    
-    // Step  4
-    // Add the transform instructions to the video composition
-    instruction.layerInstructions = [NSArray arrayWithObject:layerInstruction];
-    videoComposition.instructions = [NSArray arrayWithObject:instruction];
-    
-    AVPlayerItem *playerItem_ = [[AVPlayerItem alloc] initWithAsset:composition];
-    playerItem_.videoComposition = videoComposition;
-    
-    CMTime time;
-    
-    time=kCMTimeZero;
-    [player replaceCurrentItemWithPlayerItem:playerItem_];
-    
-    [player seekToTime:time toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-    
-    
-    //Export rotated video to the file
-    AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:composition presetName:AVAssetExportPresetMediumQuality] ;
-    exportSession.outputURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@_rotated",url]];
-    exportSession.outputFileType = AVFileTypeQuickTimeMovie;
-    exportSession.videoComposition = videoComposition;
-    exportSession.shouldOptimizeForNetworkUse = YES;
-    exportSession.timeRange = CMTimeRangeMake(kCMTimeZero, asset.duration);
-    
-    [exportSession exportAsynchronouslyWithCompletionHandler:^{
-        NSLog(@"Video exported");
-    }];
-    
-    
-    return  player;
-    
+- (void)rotateVideoPlayer {
+    [_playerLayer setAffineTransform:CGAffineTransformMakeRotation(degreeToRadian(_degree))];
 }
 
 @end
